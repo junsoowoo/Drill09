@@ -95,6 +95,27 @@ class Run:
     def draw(boy):
         boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)
 
+class Auto_run:
+    @staticmethod
+    def enter(boy, e):
+        if right_down(e) or left_up(e):
+            boy.dir, boy.action = 1, 1
+        elif left_down(e) or right_up(e):
+            boy.dir, boy.action = -1, 0
+
+    @staticmethod
+    def exit(boy, e):
+        pass
+
+    @staticmethod
+    def do(boy):
+        boy.frame = (boy.frame + 1) % 8
+        boy.x += boy.dir * 5
+        pass
+
+    @staticmethod
+    def draw(boy):
+        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)  
 
 class StateMachine:
     def __init__(self, boy):
