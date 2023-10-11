@@ -172,12 +172,15 @@ class Boy:
         self.state_machine.update()
 
     def handle_event(self, event):
-        self.state_machine.handle_event(('INPUT', event))
-        pass
-
-    def handle_key_event(self, event):
-        if event == SDLK_a:
+        if event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_a:
             self.state_machine.handle_event(('INPUT', event))
+
+        elif event[1].type == SDL_KEYUP:
+            if event[1].key == SDLK_a:
+                pass
+        else:
+            self.state_machine.handle_event(('INPUT', event))
+        pass
 
     def draw(self):
         self.state_machine.draw()
