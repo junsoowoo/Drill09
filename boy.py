@@ -110,12 +110,12 @@ class Auto_run:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 5
+        boy.x += boy.dir * 8
         pass
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, boy.y)  
+        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 200, 200, boy.x, boy.y)
 
 class StateMachine:
     def __init__(self, boy):
