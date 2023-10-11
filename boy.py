@@ -126,13 +126,13 @@ class Auto_run:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 15
-        if boy.x > 800:
+        if boy.x >= 800:
             boy.dir = -1
             boy.action = 0
-        elif boy.x < 800 or boy.x < 0:
+        elif boy.x <= 0:
             boy.dir = 1
             boy.action = 1
+        boy.x += boy.dir * 8
         if get_time() - boy.auto_run_start_time > 5:
             boy.state_machine.handle_event(('TIME_OUT', 0))
 
@@ -140,7 +140,7 @@ class Auto_run:
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 200, 200, boy.x, boy.y)
+        boy.image.clip_draw(boy.frame * 100, boy.action * 100, 100, 100, boy.x, 130, 200, 200)
 
 
 class StateMachine:
