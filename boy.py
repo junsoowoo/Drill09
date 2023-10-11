@@ -2,6 +2,7 @@
 
 from pico2d import load_image, SDL_KEYDOWN, SDLK_SPACE, get_time, SDLK_RIGHT, SDLK_LEFT, SDL_KEYUP, SDLK_a
 import math
+import random
 
 
 def space_down(e):
@@ -26,6 +27,10 @@ def left_down(e):
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+
+def a_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
 
 
 class Idle:
@@ -107,8 +112,11 @@ class Run:
 class Auto_run:
     @staticmethod
     def enter(boy, e):
-        boy.action = 1
-        boy.dir = 1
+        boy.dir = random.choice([-1, 1])
+        if boy.dir == 1:
+            boy.action = 1
+        elif boy.dir == -1:
+            boy.action = 0
         boy.auto_run_start_time = get_time()
 
     @staticmethod
@@ -118,9 +126,16 @@ class Auto_run:
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
-        boy.x += boy.dir * 8
+        boy.x += boy.dir * 15
+        if boy.x > 800:
+            boy.dir = -1
+            boy.action = 0
+        elif boy.x < 800 or boy.x < 0:
+            boy.dir = 1
+            boy.action = 1
         if get_time() - boy.auto_run_start_time > 5:
             boy.state_machine.handle_event(('TIME_OUT', 0))
+
         pass
 
     @staticmethod
@@ -131,13 +146,12 @@ class Auto_run:
 class StateMachine:
     def __init__(self, boy):
         self.boy = boy
-        self.cur_state = Sleep
+        self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep},
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, a_down: Auto_run},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
             Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle},
-            Auto_run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, time_out: Idle}
-
+            Auto_run: {time_out: Idle}
         }
 
     def handle_event(self, e):
@@ -172,14 +186,7 @@ class Boy:
         self.state_machine.update()
 
     def handle_event(self, event):
-        if event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_a:
-            self.state_machine.handle_event(('INPUT', event))
-
-        elif event[1].type == SDL_KEYUP:
-            if event[1].key == SDLK_a:
-                pass
-        else:
-            self.state_machine.handle_event(('INPUT', event))
+        self.state_machine.handle_event(('INPUT', event))
         pass
 
     def draw(self):
